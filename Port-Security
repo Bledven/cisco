@@ -1,0 +1,13 @@
+https://wiki.merionet.ru/articles/nastrojka-cisco-port-security
+
+Port-Security – это функция коммутатора, при помощи которой мы можем указать каким устройствам можно пропускать трафик через определенные порты. Устройство определяется по его MAC-адресу.
+
+Switch#interface fa0/1
+Switch(config-ig)#switchport mode access
+Switch(config-ig)#switchport access vlan 10
+Switch(config-ig)#switchport port-security
+Switch(config-ig)#switchport port-security maximum 5
+Switch(config-ig)#switchport port-security mac-address sticky
+
+show port-security interface fastEthernet 0/1
+show port-security address
