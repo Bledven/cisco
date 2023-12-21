@@ -1,4 +1,6 @@
+https://wiki.merionet.ru/articles/9-luchshih-reshenij-dlya-upravleniya-setyu?utm_source=knowledgebase&utm_content=nastrojka-etherchannel-na-cisco
 https://habr.com/ru/articles/143768/
+
 # Настройка rapid-pvst
 Switch(config)#spanning-tree mode rapid-pvst 
 
