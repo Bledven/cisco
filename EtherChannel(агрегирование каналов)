@@ -1,0 +1,16 @@
+https://wiki.merionet.ru/articles/nastrojka-etherchannel-na-cisco
+Перед настройкой выключить порты на свиче
+
+Switch(config)#interface range fastEthernet 0/3-5
+Switch(config-if)#channel-protocol lacp
+Switch(config-if)#channel-group 1 mode active (Если Pagp то desirable)
+на другом свиче
+Switch(config-if)#channel-group 1 mode passive (Если Pagp то auto)
+
+Switch(config)#interface port-channel 1
+Switch(config-if)#switchport mode trunk
+Switch(config-if)#switchport trunk allowed vlan 50
+
+show etherchannel summary
+show etherchannel 1 port-channel
+show interfaces etherchannel
