@@ -1,0 +1,187 @@
+object-group service ssh
+  port-range 22
+exit
+object-group service dhcp_server
+  port-range 67
+exit
+object-group service dhcp_client
+  port-range 68
+exit
+object-group service ntp
+  port-range 123
+exit
+
+syslog max-files 3
+syslog file-size 512
+syslog file tmpsys:syslog/default info
+logging login on-failure
+
+username techsupport
+  password encrypted $6$37.kK7nqqmec2S1Q$xMTP.4XfVIrP7f1xy5Yw9qlk2.c7tJ4EP96tvTGfuKxJCOe2or1UpwAXXrplsBJUOttSZ4nkm23L56wXB8MZM.
+exit
+username root
+  password encrypted $6$1eJKGPtahq6w.ZpO$aN2iP2jbbQY.gNlvUkjmtHQEi0lbF9.josuYxO04ic0SsYLNi8KWair58kBI6BSu4TjVzvh4M1r3tIU0gbGDd/
+exit
+username esradm
+  password encrypted $6$/sFyd9JmYDFKiaBP$fbdgeF1XiPIlrCaTcKeLz7Ma6qR/hqrC4CQfosUmf.c8pjXdDGTlySZs7xBf1JxLnSH0doRhvloQT.KL1Sqta/
+  privilege 15
+exit
+username tarasov
+  password encrypted $6$cJxoXeXGr7cohmS9$eW5vHFSvBMURxrzk8hl1ezXsDV4RLRw/3OvicNIbZMliVP94qIcjhjm7tdtNVjlhCFlR8AmPksj3RO8lweqmJ/
+  privilege 15
+exit
+
+
+boot host auto-config
+vlan 2
+exit
+
+security zone trusted
+exit
+security zone untrusted
+exit
+
+router ospf 1
+  redistribute static
+  redistribute rip
+  area 1.1.1.1
+    enable
+  exit
+  enable
+exit
+
+bridge 2
+  vlan 2
+  security-zone untrusted
+  ip address dhcp
+  enable
+exit
+
+interface gigabitethernet 1/0/1
+  mode switchport
+  speed 1000M
+  switchport access vlan 2
+exit
+interface gigabitethernet 1/0/2
+  security-zone trusted
+  ip address 172.17.1.1/24
+exit
+interface gigabitethernet 1/0/3
+  mode switchport
+exit
+interface gigabitethernet 1/0/4
+  ip firewall disable
+  ip address 172.17.0.1/24
+  ip address 10.10.0.254/24
+  ip ospf instance 1
+  ip ospf area 1.1.1.1
+  ip ospf
+exit
+interface loopback 8
+  ip address 1.1.1.1/30
+exit
+tunnel pppoe 1
+  authentication method mschap
+  authentication method mschap-v2
+  authentication method eap
+  authentication method pap
+  interface bridge 2
+  security-zone untrusted
+  ip firewall disable
+  ip tcp adjust-mss 1452
+  username rt password ascii-text encrypted 8EA0
+  enable
+exit
+
+router rip
+  redistribute static
+  timers update 25
+  network 172.17.0.0/24
+  network 10.10.0.0/24
+  enable
+exit
+
+security zone-pair trusted untrusted
+  rule 1
+    action permit
+    enable
+  exit
+exit
+security zone-pair trusted trusted
+  rule 1
+    action permit
+    enable
+  exit
+exit
+security zone-pair trusted self
+  rule 10
+    action permit
+    match protocol tcp
+    match destination-port ssh
+    enable
+  exit
+  rule 20
+    action permit
+    match protocol icmp
+    enable
+  exit
+  rule 30
+    action permit
+    match protocol udp
+    match source-port dhcp_client
+    match destination-port dhcp_server
+    enable
+  exit
+  rule 40
+    action permit
+    match protocol udp
+    match destination-port ntp
+    enable
+  exit
+exit
+security zone-pair untrusted self
+  rule 1
+    action permit
+    match protocol udp
+    match source-port dhcp_server
+    match destination-port dhcp_client
+    enable
+  exit
+exit
+
+security passwords default-expired
+
+nat source
+  ruleset factory
+    to zone untrusted
+    rule 10
+      description "replace 'source ip' by outgoing interface ip address"
+      action source-nat interface
+      enable
+    exit
+  exit
+exit
+
+ip dhcp-server
+ip dhcp-server pool Simple
+  network 172.17.0.0/24
+  address-range 172.17.0.50-172.17.0.200
+  default-router 172.17.0.1
+  dns-server 172.17.0.1,78.37.77.77
+exit
+
+ip route 192.168.0.0/24 172.17.0.251
+ip route 192.168.1.0/24 172.17.0.251
+ip route 20.20.20.0/24 172.17.0.251
+ip route 192.168.2.0/24 172.17.0.251
+
+ip ssh server
+ip ssh port 48989
+ip ssh client username root
+
+ntp enable
+ntp broadcast-client enable
+ntp server 192.168.0.2
+  prefer
+  minpoll 4
+exit
