@@ -16,18 +16,15 @@ syslog file-size 512
 syslog file tmpsys:syslog/default info
 logging login on-failure
 
-username techsupport
+username user1
   password encrypted $6$37.kK7nqqmec2S1Q$xMTP.4XfVIrP7f1xy5Yw9qlk2.c7tJ4EP96tvTGfuKxJCOe2or1UpwAXXrplsBJUOttSZ4nkm23L56wXB8MZM.
 exit
-username root
+username mladm
   password encrypted $6$1eJKGPtahq6w.ZpO$aN2iP2jbbQY.gNlvUkjmtHQEi0lbF9.josuYxO04ic0SsYLNi8KWair58kBI6BSu4TjVzvh4M1r3tIU0gbGDd/
+  privilage 5
 exit
-username esradm
+username admin
   password encrypted $6$/sFyd9JmYDFKiaBP$fbdgeF1XiPIlrCaTcKeLz7Ma6qR/hqrC4CQfosUmf.c8pjXdDGTlySZs7xBf1JxLnSH0doRhvloQT.KL1Sqta/
-  privilege 15
-exit
-username tarasov
-  password encrypted $6$cJxoXeXGr7cohmS9$eW5vHFSvBMURxrzk8hl1ezXsDV4RLRw/3OvicNIbZMliVP94qIcjhjm7tdtNVjlhCFlR8AmPksj3RO8lweqmJ/
   privilege 15
 exit
 
